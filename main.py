@@ -52,6 +52,32 @@ def move(target, direction):
         target[1] = 0
 
 
+def random():
+    global bit, lfsr
+    bit = (lfsr ^ (lfsr >> 1) ^ (lfsr >> 3) ^ (lfsr >> 12)) & 1
+    lfsr = (lfsr >> 1) | (bit << 15)
+    return lfsr % 8
+
+
+def generate_fruit():
+    global fruit_x, fruit_y
+    x = random()
+    y = random()
+    while map[x][y] != 0:
+        x = random()
+        y = random()
+    map[x][y] = -1
+    fruit_x = x
+    fruit_y = y
+
+
+def eat_fruit():
+    global length, fruit_x, fruit_y
+    length += 1
+    map[fruit_x][fruit_y] = 1
+    generate_fruit()
+
+
 map = []
 for i in range(8):
     map.append([0] * 8)
@@ -64,32 +90,10 @@ map[tail_position[0]][tail_position[1]] = 1
 show_map()
 
 lfsr = 1 << 15 | 1
-def random():
-    global bit, lfsr
-    bit = (lfsr ^ (lfsr >> 1) ^ (lfsr >> 3) ^ (lfsr >> 12)) & 1
-    lfsr = (lfsr >> 1) | (bit << 15)
-    return lfsr % 8
 for i in range(32):
     random()
-
 fruit_x = 0
 fruit_y = 0
-def generate_fruit():
-    global fruit_x, fruit_y
-    x = random()
-    y = random()
-    while map[x][y] != 0:
-        x = random()
-        y = random()
-    map[x][y] = -1
-    fruit_x = x
-    fruit_y = y
-def eat_fruit():
-    global length, fruit_x, fruit_y
-    length += 1
-    map[fruit_x][fruit_y] = 1
-    generate_fruit()
-
 generate_fruit()
 
 threading.Thread(target=get_keyboard, daemon=True).start()
