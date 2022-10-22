@@ -101,6 +101,10 @@ while True:
     if clock < 5000000:
         continue
     move(head_position, direction)
+    # 3 -> 11
+    # 1 -> 1101
+    # 1 -> 110101
+    # x -> history << 2 + x
     history = history + f'{bin(direction)[2:]:>02}'
     if head_position[0] == fruit_x and head_position[1] == fruit_y:
         eat_fruit()
@@ -110,12 +114,10 @@ while True:
     else:
         map[head_position[0]][head_position[1]] = 1
         map[tail_position[0]][tail_position[1]] = 0
-        # TODO: modify following condition, maybe need to save all history direction, maybe use like queue to save
-        # set                       get
-        # 3 -> 11                   110101  -> 11                                 -> 0101
-        # 1 -> 1101                 0101    -> 01                                 -> 01
-        # 1 -> 110101               01      -> 01                                 -> 0
-        # x -> history * 4 + x      history -> history >> (length * 2) -> history % 2**(length * 2)
+        # 110101 -> 11 + 0101
+        # 0101 -> 01 + 01
+        # 01 -> 01 + 0
+        # history -> history >> (length * 2) + history % 2 ** (length * 2)
         body_direction = int(bin(int(history, 2) >> (length * 2))[2:], 2)
         history = bin(int(history, 2) % 2 ** (length * 2))[2:]
         move(tail_position, body_direction)
