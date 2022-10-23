@@ -2,11 +2,61 @@ import msvcrt
 import os
 import threading
 
-'''
-TODO
-use seven-segment-led to display current length
-'''
+def number_to_segment(number):
+    match number:
+        case 0:
+            return [1, 1, 1, 1, 1, 1, 0]
+        case 1:
+            return [0, 1, 1, 0, 0, 0, 0]
+        case 2:
+            return [1, 1, 0, 1, 1, 0, 1]
+        case 3:
+            return [1, 1, 1, 1, 0, 0, 1]
+        case 4:
+            return [0, 1, 1, 0, 0, 1, 1]
+        case 5:
+            return [1, 0, 1, 1, 0, 1, 1]
+        case 6:
+            return [0, 0, 1, 1, 1, 1, 1]
+        case 7:
+            return [1, 1, 1, 0, 0, 0, 0]
+        case 8:
+            return [1, 1, 1, 1, 1, 1, 1]
+        case 9:
+            return [1, 1, 1, 0, 0, 1, 1]
 
+def display_count():
+    global length
+    digit_2 = length // 10
+    digit_1 = length % 10
+    segment_2 = number_to_segment(digit_2)
+    segment_1 = number_to_segment(digit_1)
+    print(' ', end='')
+    print('─' if segment_2[0] == 1 else ' ', end='')
+    print('   ', end='')
+    print('─' if segment_1[0] == 1 else ' ')
+    print('│' if segment_2[5] == 1 else ' ', end='')
+    print(' ', end='')
+    print('│' if segment_2[1] == 1 else ' ', end='')
+    print(' ', end='')
+    print('│' if segment_1[5] == 1 else ' ', end='')
+    print(' ', end='')
+    print('│' if segment_1[1] == 1 else ' ')
+    print(' ', end='')
+    print('─' if segment_2[6] == 1 else ' ', end='')
+    print('   ', end='')
+    print('─' if segment_1[6] == 1 else ' ')
+    print('│' if segment_2[4] == 1 else ' ', end='')
+    print(' ', end='')
+    print('│' if segment_2[2] == 1 else ' ', end='')
+    print(' ', end='')
+    print('│' if segment_1[4] == 1 else ' ', end='')
+    print(' ', end='')
+    print('│' if segment_1[2] == 1 else ' ')
+    print(' ', end='')
+    print('─' if segment_2[3] == 1 else ' ', end='')
+    print('   ', end='')
+    print('─' if segment_1[3] == 1 else ' ')
 
 def show_map():
     os.system('cls')
@@ -20,6 +70,7 @@ def show_map():
             else:
                 print('x', end='')
         print()
+    display_count()
 
 
 def get_keyboard():
@@ -87,7 +138,6 @@ tail_position = [0, 0]
 map[head_position[0]][head_position[1]] = 1
 map[1][0] = 1
 map[tail_position[0]][tail_position[1]] = 1
-show_map()
 
 lfsr = 1 << 15 | 1
 for i in range(32):
@@ -100,6 +150,8 @@ threading.Thread(target=get_keyboard, daemon=True).start()
 clock = 0
 history = '0101'
 length = 2
+
+show_map()
 while True:
     clock = clock + 1
     if clock < 5000000:
